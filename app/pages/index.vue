@@ -1,13 +1,24 @@
 <template>
   <div>
     <v-row>
-      <v-col col="6">
-        <WelcomeCard :title="hello" />
+      <v-col col="4">
+        <v-expand-transition>
+          <WelcomeCard v-if="visible" :title="'Another card'" />
+        </v-expand-transition>
       </v-col>
-      <v-col col="6">
-        <WelcomeCard :title="'Another card'" />
+      <v-col col="4">
+        <v-scale-transition>
+          <WelcomeCard v-if="visible" :title="'Another card'" />
+        </v-scale-transition>
+      </v-col>
+      <v-col col="4">
+        <v-fade-transition>
+          <WelcomeCard v-if="visible" :title="'Another card'" />
+        </v-fade-transition>
       </v-col>
     </v-row>
+
+    <v-btn @click="visible = !visible">Toggle animation</v-btn>
 
     <div class="py-5 text-center">
       <p class="display-4">Light 96sp</p>
@@ -23,17 +34,6 @@
       <p class="caption">Regular 12sp</p>
       <p class="overline">Regular 10sp</p>
     </div>
-
-    <div class="text-center mt-3">
-      <v-btn
-        color="primary"
-        :loading="fetchLoader"
-        @click="fetchMore"
-        class="mb-3"
-        >Fetch more</v-btn
-      >
-      <p v-for="(item, i) in list" :key="i">{{ i }}. {{ item }}</p>
-    </div>
   </div>
 </template>
 
@@ -41,7 +41,6 @@
 import { Component, Vue } from "nuxt-property-decorator";
 import { ExampleStore } from "~/store/example";
 import { INuxtContext } from "nuxt";
-import Axios from "axios";
 import WelcomeCard from "~/components/welcome_card.vue";
 
 @Component({
@@ -50,29 +49,6 @@ import WelcomeCard from "~/components/welcome_card.vue";
   }
 })
 export default class App extends Vue {
-  list = [] as string[];
-  fetchLoader = false;
-
-  banner = false;
-
-  async fetchMore() {
-    this.fetchLoader = true;
-    try {
-      // TODO: this.$axios
-      const result = (await Axios.get("http://localhost:3000/api")).data;
-      setTimeout(() => {
-        this.list.push(result);
-        this.fetchLoader = false;
-      }, 1000);
-    } catch (err) {
-      this.fetchLoader = false;
-    }
-  }
-
-  async asyncData(context: INuxtContext) {
-    return {
-      hello: (await context.$axios.get("http://localhost:3000/api")).data
-    };
-  }
+  visible = false;
 }
 </script>
